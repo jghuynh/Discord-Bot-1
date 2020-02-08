@@ -28,7 +28,6 @@ public class Main extends ListenerAdapter {
 	 */
 	@Override
 	public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
-		// TODO Auto-generated method stub
 		if (event.getAuthor().isBot()) {
 			return;
 		}
