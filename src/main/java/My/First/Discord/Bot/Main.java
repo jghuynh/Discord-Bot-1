@@ -17,7 +17,6 @@ public class Main extends ListenerAdapter {
 					.build();
 			System.out.println("Alive!");
 		} catch (LoginException e) {
-			// TODO Auto-generated catch block
 			System.err.println("Login Error!");
 			e.printStackTrace();
 		}
