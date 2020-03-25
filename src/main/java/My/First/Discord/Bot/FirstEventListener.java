@@ -1,14 +1,17 @@
 package My.First.Discord.Bot;
 
-import java.awt.List;
 import java.io.BufferedReader;
-import java.io.File;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-
-import javax.annotation.Nonnull;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
 
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -21,11 +24,11 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
  */
 public class FirstEventListener extends ListenerAdapter {
 	
-	private ArrayList<String> verbs; 
+	private Set<String> verbs; 
 	private Path GiangPath;
 //	ArrayList<Integer> list = new ArrayList<Integer>();
 	public FirstEventListener() throws IOException {
-		verbs = new ArrayList<String>();
+		verbs = new HashSet<String>();
 		GiangPath = Path.of("GiangVerbs");
 		
 		try (BufferedReader myReader = Files.newBufferedReader(GiangPath)) {
@@ -34,23 +37,7 @@ public class FirstEventListener extends ListenerAdapter {
 				verbs.add(line);
 			}
 		}
-		
-		
-		
-		
-		/*
-		 * getfile("GiangVerbs")
-		 * Read file
-		 * for every line in file
-		 * add that line to verbs
-		 */
-//		verbs.add("farts explosively");
-//		verbs.add("slaps the shit out of Jake");
-//		verbs.add("sings melodiously");
-//		verbs.add("raises cats");
-//		verbs.add("explodes spectacularly");
-//		verbs.add("bitch-slaps Andrew");
-		
+		System.out.println(verbs);
 	}
 	
 	/**
@@ -58,31 +45,48 @@ public class FirstEventListener extends ListenerAdapter {
 	 */
 	@Override
 	public void onMessageReceived(MessageReceivedEvent event) {
-		/**
-		 * If eventmessage says "hello"
-		 * Discord says "world!"
-		 */
+		
+		// so Unicorn does not re-read its output
+		if (event.getAuthor().isBot()) {
+			return;
+		}
+		
 		MessageChannel channel = event.getChannel();
-		String receivedMessage = event.getMessage().getContentRaw().toLowerCase().trim(); 
-		if (receivedMessage.equals("hello")) {
+		String[] receivedMessage = event.getMessage().getContentRaw().toLowerCase().trim().split(" ");
+		String contentString = event.getMessage().getContentRaw().toLowerCase().trim();
+		System.out.println("receivedMessage[0] = " + receivedMessage[0]);
+		
+		if (receivedMessage[0].equals("hello")) {
 			//Send the message "world" in the same place the word "hello" was mentioned
 			channel.sendMessage("world!").queue();
-//			channel.sendMessage("world!");
-		}
-		
-		/* if event string is "Giang" or "Gianna",
-		 * randomly grab an item from a list of verbs
-		 * form that string
-		 * send that message (don't forget .queue()!)
-		 */
-		
-		else if (receivedMessage.equals("giang")
-				|| receivedMessage.equals("gianna")) {
+		} else if (receivedMessage[0].equals("--addgiang")) {
+			String verb = "";
+			for (int index = 1; index < receivedMessage.length; index ++) {
+				verb = verb.concat(receivedMessage[index] + " ");
+				
+			}
+			System.out.println("verb: " + verb);
+			verb = verb.trim();
+			verbs.add(verb);
+			
+			if (verbs.add(verb)) {
+//				Iterator<String> iterator = verbs.iterator();
+				try (BufferedWriter writer = new BufferedWriter(new FileWriter(this.GiangPath.toString(), true))) {
+					//writer.write(verb);
+					writer.append(verb);
+					writer.newLine();
+					writer.close();
+				} catch (IOException e) {
+					System.out.println("Oops! Wrong file read. Could not read " + GiangPath.toString());
+				}	
+			}
+			
+		} else if (contentString.contains("giang")|| contentString.contains("gianna")) {
 			int index = (int) (Math.random() *verbs.size());
-			String message = receivedMessage + " " + verbs.get(index);
+			String message = receivedMessage[0] + " " + verbs.toArray()[index];
+//			System.out.println("message: " + message);
 			channel.sendMessage(message).queue();
-		}
+		} 
+			
 	}
-	
-	
 }

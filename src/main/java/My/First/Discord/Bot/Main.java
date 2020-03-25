@@ -21,6 +21,7 @@ public class Main extends ListenerAdapter {
 			
 			// connect my bot to FirstEventLister class
 			api.addEventListener(new FirstEventListener());
+			System.out.println("RIght after adding event listener");
 		} catch (LoginException e) {
 			System.err.println("Login Error!");
 		} catch (IOException e) {
