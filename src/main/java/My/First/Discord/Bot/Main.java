@@ -12,10 +12,14 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 public class Main extends ListenerAdapter {
 	public static void main(String[] args) {
 		try {
+			
 			JDA api = new JDABuilder(AccountType.BOT)
 					.setToken(args[0])
 					.build();
 			System.out.println("Alive!");
+			
+			// connect my bot to FirstEventLister class
+			api.addEventListener(new FirstEventListener());
 		} catch (LoginException e) {
 			System.err.println("Login Error!");
 			e.printStackTrace();
