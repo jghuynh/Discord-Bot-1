@@ -38,6 +38,7 @@ public class FirstEventListener extends ListenerAdapter {
 			}
 		}
 		System.out.println(verbs);
+		System.out.println("verb array = " + verbs.toArray()[0]);
 	}
 	
 	/**
@@ -67,26 +68,30 @@ public class FirstEventListener extends ListenerAdapter {
 			}
 			System.out.println("verb: " + verb);
 			verb = verb.trim();
-			verbs.add(verb);
+//			verbs.add(verb);
 			
 			if (verbs.add(verb)) {
 //				Iterator<String> iterator = verbs.iterator();
 				try (BufferedWriter writer = new BufferedWriter(new FileWriter(this.GiangPath.toString(), true))) {
 					//writer.write(verb);
-					writer.append(verb);
 					writer.newLine();
+					writer.append(verb);
+
 					writer.close();
 				} catch (IOException e) {
 					System.out.println("Oops! Wrong file read. Could not read " + GiangPath.toString());
 				}	
+			} else {
+				channel.sendMessage("You already have that verb!").queue();
 			}
 			
 		} else if (contentString.contains("giang")|| contentString.contains("gianna")) {
 			int index = (int) (Math.random() *verbs.size());
+
 			String message = receivedMessage[0] + " " + verbs.toArray()[index];
-//			System.out.println("message: " + message);
+			System.out.println("message: " + message);
 			channel.sendMessage(message).queue();
-		} 
+		}
 			
 	}
 }
