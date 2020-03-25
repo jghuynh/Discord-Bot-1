@@ -1,6 +1,11 @@
 package My.First.Discord.Bot;
 
 import java.awt.List;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 
 import javax.annotation.Nonnull;
@@ -17,21 +22,34 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 public class FirstEventListener extends ListenerAdapter {
 	
 	private ArrayList<String> verbs; 
+	private Path GiangPath;
 //	ArrayList<Integer> list = new ArrayList<Integer>();
-	public FirstEventListener() {
+	public FirstEventListener() throws IOException {
 		verbs = new ArrayList<String>();
+		GiangPath = Path.of("GiangVerbs");
+		
+		try (BufferedReader myReader = Files.newBufferedReader(GiangPath)) {
+			String line = "";
+			while ((line = myReader.readLine()) != null) {
+				verbs.add(line);
+			}
+		}
+		
+		
+		
+		
 		/*
 		 * getfile("GiangVerbs")
 		 * Read file
 		 * for every line in file
 		 * add that line to verbs
 		 */
-		verbs.add("farts explosively");
-		verbs.add("slaps the shit out of Jake");
-		verbs.add("sings melodiously");
-		verbs.add("raises cats");
-		verbs.add("explodes spectacularly");
-		verbs.add("bitch-slaps Andrew");
+//		verbs.add("farts explosively");
+//		verbs.add("slaps the shit out of Jake");
+//		verbs.add("sings melodiously");
+//		verbs.add("raises cats");
+//		verbs.add("explodes spectacularly");
+//		verbs.add("bitch-slaps Andrew");
 		
 	}
 	
@@ -62,7 +80,6 @@ public class FirstEventListener extends ListenerAdapter {
 				|| receivedMessage.equals("gianna")) {
 			int index = (int) (Math.random() *verbs.size());
 			String message = receivedMessage + " " + verbs.get(index);
-			System.out.println("my message, " + message);
 			channel.sendMessage(message).queue();
 		}
 	}

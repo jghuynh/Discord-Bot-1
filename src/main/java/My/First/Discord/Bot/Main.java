@@ -1,5 +1,7 @@
 package My.First.Discord.Bot;
 
+import java.io.IOException;
+
 import javax.security.auth.login.LoginException;
 
 import net.dv8tion.jda.api.AccountType;
@@ -12,7 +14,6 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 public class Main extends ListenerAdapter {
 	public static void main(String[] args) {
 		try {
-			
 			JDA api = new JDABuilder(AccountType.BOT)
 					.setToken(args[0])
 					.build();
@@ -22,7 +23,8 @@ public class Main extends ListenerAdapter {
 			api.addEventListener(new FirstEventListener());
 		} catch (LoginException e) {
 			System.err.println("Login Error!");
-			e.printStackTrace();
+		} catch (IOException e) {
+			System.err.println("Oops! Failed to find file");
 		}
 	}
 	
