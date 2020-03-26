@@ -95,6 +95,8 @@ public class FirstEventListener extends ListenerAdapter {
 		} else if (receivedMessage[0].contentEquals("--rps")) {
 			if (this.rpsPlayer == 0) {
 				this.rpsPlayer = event.getMember().getIdLong();
+				rpsOccupied = true;
+				channel.sendMessage("Let's play rock paper scissors! Make a move and say Ready when you are ready!").queue();
 			} else {
 				channel.sendMessage("Someone else is playing! Wait for your turn").queue();
 			}
@@ -104,8 +106,68 @@ public class FirstEventListener extends ListenerAdapter {
 			 * save the 
 			 * bot speaks: Let's play rock paper scissors! 
 			 * Make a move and say "ready" when you are ready,
+			 * When andrew says ready..
+			 * 		Bot screams: 3, 2, 1, Go!
+			 * 		foe = get Andrew's raw content string
+			 *      if foe == rock
+			 *        if 
+			 * 		develop a win strategy:
 			 * 
 			 */
+		} else if (receivedMessage[0].equals("ready")) {
+			if (this.rpsPlayer == event.getMember().getIdLong()) {
+				channel.sendMessage("3").queue();
+				channel.sendMessage("2").queue();
+				channel.sendMessage("1").queue();
+				channel.sendMessage("Go!").queue();
+			} else {
+				channel.sendMessage("Hey! It's not your turn yet to play with me!").queue();
+			}
+		} else if (receivedMessage[0].equals("scissors") || receivedMessage[0].equals("paper")
+				|| receivedMessage[0].equals("rock")) {
+			// Unicorn randomly chooses a move
+			int botMove = (int) (Math.random() * (2 - 0) + 0);
+			if (this.rpsPlayer == event.getMember().getIdLong()) {
+				int player1 = 0;
+				switch (receivedMessage[0]) {
+					case "scissors":
+						player1 = 0;
+						break;
+					case "paper":
+						player1 = 1;
+						break;
+					default:
+						player1 = 2;
+				}
+
+				int winner = getWinner(player1, botMove);
+				
+			} else {
+				channel.sendMessage("Hey! It's not your turn yet to play with me!").queue();
+			}
+			
 		}
+	}
+	
+	/**
+	 * 	Gets the winner of the rock paper scissor game
+	 * 0 = scissors
+	 * 1 = paper
+	 * 2 = rock
+	 * 
+	 * @param p1 the value of player 1's choice
+	 * @param p2 the value of player 2's choice
+	 * @return 0 if tie; 1 if p1 won; -1 if p2 won
+	 */
+	public int getWinner(int p1, int p2) {
+		if (p1 == p2) {
+			return 0;
+		}
+		
+		if ( (p1 + 1) %3 == p2) {
+			return 1;
+		}
+		return 0;
+		
 	}
 }
