@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -26,6 +27,8 @@ public class FirstEventListener extends ListenerAdapter {
 	
 	private Set<String> verbs; 
 	private Path GiangPath;
+	private boolean rpsOccupied;
+	
 //	ArrayList<Integer> list = new ArrayList<Integer>();
 	public FirstEventListener() throws IOException {
 		verbs = new HashSet<String>();
@@ -37,6 +40,7 @@ public class FirstEventListener extends ListenerAdapter {
 				verbs.add(line);
 			}
 		}
+		rpsOccupied = false;
 		System.out.println(verbs);
 		System.out.println("verb array = " + verbs.toArray()[0]);
 	}
@@ -55,7 +59,6 @@ public class FirstEventListener extends ListenerAdapter {
 		MessageChannel channel = event.getChannel();
 		String[] receivedMessage = event.getMessage().getContentRaw().toLowerCase().trim().split(" ");
 		String contentString = event.getMessage().getContentRaw().toLowerCase().trim();
-		System.out.println("receivedMessage[0] = " + receivedMessage[0]);
 		
 		if (receivedMessage[0].equals("hello")) {
 			//Send the message "world" in the same place the word "hello" was mentioned
@@ -64,19 +67,13 @@ public class FirstEventListener extends ListenerAdapter {
 			String verb = "";
 			for (int index = 1; index < receivedMessage.length; index ++) {
 				verb = verb.concat(receivedMessage[index] + " ");
-				
 			}
 			System.out.println("verb: " + verb);
-			verb = verb.trim();
-//			verbs.add(verb);
-			
+			verb = verb.trim();		
 			if (verbs.add(verb)) {
-//				Iterator<String> iterator = verbs.iterator();
 				try (BufferedWriter writer = new BufferedWriter(new FileWriter(this.GiangPath.toString(), true))) {
-					//writer.write(verb);
 					writer.newLine();
 					writer.append(verb);
-
 					writer.close();
 				} catch (IOException e) {
 					System.out.println("Oops! Wrong file read. Could not read " + GiangPath.toString());
@@ -84,14 +81,18 @@ public class FirstEventListener extends ListenerAdapter {
 			} else {
 				channel.sendMessage("You already have that verb!").queue();
 			}
-			
 		} else if (contentString.contains("giang")|| contentString.contains("gianna")) {
 			int index = (int) (Math.random() *verbs.size());
-
 			String message = receivedMessage[0] + " " + verbs.toArray()[index];
 			System.out.println("message: " + message);
 			channel.sendMessage(message).queue();
+		} 
+		else if (receivedMessage[0].equals("--getInfo")) {
+			Member objMember = event.getMember();	
+		} else if (receivedMessage[0].contentEquals("--rps")) {
+			/*
+			 * 
+			 */
 		}
-			
 	}
 }
