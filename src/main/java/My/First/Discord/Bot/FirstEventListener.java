@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
+import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -28,6 +29,7 @@ public class FirstEventListener extends ListenerAdapter {
 	private Set<String> verbs; 
 	private Path GiangPath;
 	private boolean rpsOccupied;
+	private long rpsPlayer;
 	
 //	ArrayList<Integer> list = new ArrayList<Integer>();
 	public FirstEventListener() throws IOException {
@@ -41,6 +43,7 @@ public class FirstEventListener extends ListenerAdapter {
 			}
 		}
 		rpsOccupied = false;
+		rpsPlayer = 0;
 		System.out.println(verbs);
 		System.out.println("verb array = " + verbs.toArray()[0]);
 	}
@@ -90,7 +93,17 @@ public class FirstEventListener extends ListenerAdapter {
 		else if (receivedMessage[0].equals("--getInfo")) {
 			Member objMember = event.getMember();	
 		} else if (receivedMessage[0].contentEquals("--rps")) {
+			if (this.rpsPlayer == 0) {
+				this.rpsPlayer = event.getMember().getIdLong();
+			} else {
+				channel.sendMessage("Someone else is playing! Wait for your turn").queue();
+			}
+			
 			/*
+			 * rpsOccupied = true;
+			 * save the 
+			 * bot speaks: Let's play rock paper scissors! 
+			 * Make a move and say "ready" when you are ready,
 			 * 
 			 */
 		}
