@@ -96,7 +96,7 @@ public class FirstEventListener extends ListenerAdapter {
 			if (this.rpsPlayer == 0) {
 				this.rpsPlayer = event.getMember().getIdLong();
 				rpsOccupied = true;
-				channel.sendMessage("Let's play rock paper scissors! Make a move and say Ready when you are ready!").queue();
+				channel.sendMessage("Let's play rock paper scissors! Make a move and say Ready when you are ready to fight!").queue();
 			} else {
 				channel.sendMessage("Someone else is playing! Wait for your turn").queue();
 			}
@@ -141,7 +141,18 @@ public class FirstEventListener extends ListenerAdapter {
 				}
 
 				int winner = getWinner(player1, botMove);
-				
+				switch (winner) {
+					case 1:
+						channel.sendMessage("You won! Congratulations " + event.getMember().getUser().getName() + "!").queue();
+						break;
+					case -1:
+						channel.sendMessage("I win! Good game!").queue();
+						break;
+					default:
+						channel.sendMessage("It's a tie!").queue();
+				}
+				this.rpsOccupied = false;
+				this.rpsPlayer = 0;
 			} else {
 				channel.sendMessage("Hey! It's not your turn yet to play with me!").queue();
 			}
