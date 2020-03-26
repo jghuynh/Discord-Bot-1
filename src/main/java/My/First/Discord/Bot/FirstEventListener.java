@@ -95,27 +95,13 @@ public class FirstEventListener extends ListenerAdapter {
 		else if (receivedMessage[0].equals("--getInfo")) {
 			Member objMember = event.getMember();	
 		} else if (receivedMessage[0].contentEquals("--rps")) {
-			if (this.rpsPlayer == 0) {
+			if (this.rpsPlayer == 0 && this.rpsOccupied == false) {
 				this.rpsPlayer = event.getMember().getIdLong();
-				rpsOccupied = true;
+				this.rpsOccupied = true;
 				channel.sendMessage("Let's play rock paper scissors! Make a move and say Ready when you are ready to fight!").queue();
 			} else {
 				channel.sendMessage("Someone else is playing! Wait for your turn").queue();
 			}
-			
-			/*
-			 * rpsOccupied = true;
-			 * save the 
-			 * bot speaks: Let's play rock paper scissors! 
-			 * Make a move and say "ready" when you are ready,
-			 * When andrew says ready..
-			 * 		Bot screams: 3, 2, 1, Go!
-			 * 		foe = get Andrew's raw content string
-			 *      if foe == rock
-			 *        if 
-			 * 		develop a win strategy:
-			 * 
-			 */
 		} else if (receivedMessage[0].equals("ready")) {
 			if (this.rpsPlayer == event.getMember().getIdLong()) {
 				this.rpsReadyToFight = true;
@@ -127,46 +113,45 @@ public class FirstEventListener extends ListenerAdapter {
 				channel.sendMessage("Hey! It's not your turn yet to play with me!").queue();
 			}
 		} else if (receivedMessage[0].equals("scissors") || receivedMessage[0].equals("paper")
-				|| receivedMessage[0].equals("rock")) {
-			// check if player said "Ready"
-			if (this.rpsReadyToFight = false) {
-				channel.sendMessage("Please type 'ready' before you choose your weapon.").queue();
-			} else {
-				
-			
-			// Unicorn randomly chooses a move
-				int botMove = (int) (Math.random() * (2 - 0) + 0);
+				|| receivedMessage[0].equals("rock")) {			
 				if (this.rpsPlayer == event.getMember().getIdLong()) {
-					int player1 = 0;
-					switch (receivedMessage[0]) {
-						case "scissors":
-							player1 = 0;
-							break;
-						case "paper":
-							player1 = 1;
-							break;
-						default:
-							player1 = 2;
+					// check if player said "Ready" or not
+					if (this.rpsReadyToFight = false) {
+						channel.sendMessage("Please type 'ready' before you choose your weapon.").queue();
+					} else {
+						// Unicorn randomly chooses a move
+						int botMove = (int) (Math.random() * (2 - 0) + 0);
+						int player1 = 0;
+						switch (receivedMessage[0]) {
+							case "scissors":
+								player1 = 0;
+								break;
+							case "paper":
+								player1 = 1;
+								break;
+							default:
+								player1 = 2;
+						}
+		
+						int winner = getWinner(player1, botMove);
+						switch (winner) {
+							case 1:
+								channel.sendMessage("You won! Congratulations " + event.getMember().getUser().getName() + "!").queue();
+								break;
+							case -1:
+								channel.sendMessage("I win! Good game!").queue();
+								break;
+							default:
+								channel.sendMessage("It's a tie!").queue();
+						}
+						this.rpsOccupied = false;
+						this.rpsPlayer = 0;		
+						this.rpsReadyToFight = false;
 					}
-	
-					int winner = getWinner(player1, botMove);
-					switch (winner) {
-						case 1:
-							channel.sendMessage("You won! Congratulations " + event.getMember().getUser().getName() + "!").queue();
-							break;
-						case -1:
-							channel.sendMessage("I win! Good game!").queue();
-							break;
-						default:
-							channel.sendMessage("It's a tie!").queue();
-					}
-					this.rpsOccupied = false;
-					this.rpsPlayer = 0;
-				
-			} else {
+				} else {
 				channel.sendMessage("Hey! It's not your turn yet to play with me!").queue();
 			}
-		}
+		
 		}
 	}
 	
