@@ -30,6 +30,7 @@ public class FirstEventListener extends ListenerAdapter {
 	private Path GiangPath;
 	private boolean rpsOccupied;
 	private long rpsPlayer;
+	private boolean rpsReadyToFight;
 	
 //	ArrayList<Integer> list = new ArrayList<Integer>();
 	public FirstEventListener() throws IOException {
@@ -42,8 +43,9 @@ public class FirstEventListener extends ListenerAdapter {
 				verbs.add(line);
 			}
 		}
-		rpsOccupied = false;
-		rpsPlayer = 0;
+		this.rpsOccupied = false;
+		this.rpsPlayer = 0;
+		this.rpsReadyToFight = false;
 		System.out.println(verbs);
 		System.out.println("verb array = " + verbs.toArray()[0]);
 	}
@@ -116,6 +118,7 @@ public class FirstEventListener extends ListenerAdapter {
 			 */
 		} else if (receivedMessage[0].equals("ready")) {
 			if (this.rpsPlayer == event.getMember().getIdLong()) {
+				this.rpsReadyToFight = true;
 				channel.sendMessage("3").queue();
 				channel.sendMessage("2").queue();
 				channel.sendMessage("1").queue();
@@ -125,38 +128,45 @@ public class FirstEventListener extends ListenerAdapter {
 			}
 		} else if (receivedMessage[0].equals("scissors") || receivedMessage[0].equals("paper")
 				|| receivedMessage[0].equals("rock")) {
+			// check if player said "Ready"
+			if (this.rpsReadyToFight = false) {
+				channel.sendMessage("Please type 'ready' before you choose your weapon.").queue();
+			} else {
+				
+			
 			// Unicorn randomly chooses a move
-			int botMove = (int) (Math.random() * (2 - 0) + 0);
-			if (this.rpsPlayer == event.getMember().getIdLong()) {
-				int player1 = 0;
-				switch (receivedMessage[0]) {
-					case "scissors":
-						player1 = 0;
-						break;
-					case "paper":
-						player1 = 1;
-						break;
-					default:
-						player1 = 2;
-				}
-
-				int winner = getWinner(player1, botMove);
-				switch (winner) {
-					case 1:
-						channel.sendMessage("You won! Congratulations " + event.getMember().getUser().getName() + "!").queue();
-						break;
-					case -1:
-						channel.sendMessage("I win! Good game!").queue();
-						break;
-					default:
-						channel.sendMessage("It's a tie!").queue();
-				}
-				this.rpsOccupied = false;
-				this.rpsPlayer = 0;
+				int botMove = (int) (Math.random() * (2 - 0) + 0);
+				if (this.rpsPlayer == event.getMember().getIdLong()) {
+					int player1 = 0;
+					switch (receivedMessage[0]) {
+						case "scissors":
+							player1 = 0;
+							break;
+						case "paper":
+							player1 = 1;
+							break;
+						default:
+							player1 = 2;
+					}
+	
+					int winner = getWinner(player1, botMove);
+					switch (winner) {
+						case 1:
+							channel.sendMessage("You won! Congratulations " + event.getMember().getUser().getName() + "!").queue();
+							break;
+						case -1:
+							channel.sendMessage("I win! Good game!").queue();
+							break;
+						default:
+							channel.sendMessage("It's a tie!").queue();
+					}
+					this.rpsOccupied = false;
+					this.rpsPlayer = 0;
+				
 			} else {
 				channel.sendMessage("Hey! It's not your turn yet to play with me!").queue();
 			}
-			
+		}
 		}
 	}
 	
