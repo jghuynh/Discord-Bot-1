@@ -46,8 +46,6 @@ public class FirstEventListener extends ListenerAdapter {
 		this.rpsOccupied = false;
 		this.rpsPlayer = 0;
 		this.rpsReadyToFight = false;
-		System.out.println(verbs);
-		System.out.println("verb array = " + verbs.toArray()[0]);
 	}
 	
 	/**
@@ -102,7 +100,7 @@ public class FirstEventListener extends ListenerAdapter {
 			} else {
 				channel.sendMessage("Someone else is playing! Wait for your turn").queue();
 			}
-		} else if (receivedMessage[0].equals("ready")) {
+		} else if (receivedMessage[0].equals("ready") && this.rpsOccupied == true) {
 			if (this.rpsPlayer == event.getMember().getIdLong()) {
 				this.rpsReadyToFight = true;
 				channel.sendMessage("3").queue();
@@ -112,15 +110,16 @@ public class FirstEventListener extends ListenerAdapter {
 			} else {
 				channel.sendMessage("Hey! It's not your turn yet to play with me!").queue();
 			}
-		} else if (receivedMessage[0].equals("scissors") || receivedMessage[0].equals("paper")
-				|| receivedMessage[0].equals("rock")) {			
+		} else if ((receivedMessage[0].equals("scissors") || receivedMessage[0].equals("paper")
+				|| receivedMessage[0].equals("rock")) && this.rpsOccupied == true) {			
 				if (this.rpsPlayer == event.getMember().getIdLong()) {
 					// check if player said "Ready" or not
-					if (this.rpsReadyToFight = false) {
+					if (this.rpsReadyToFight == false) {
 						channel.sendMessage("Please type 'ready' before you choose your weapon.").queue();
 					} else {
 						// Unicorn randomly chooses a move
 						int botMove = (int) (Math.random() * (2 - 0) + 0);
+						System.out.println("botMove: " + botMove);
 						int player1 = 0;
 						switch (receivedMessage[0]) {
 							case "scissors":
@@ -132,14 +131,28 @@ public class FirstEventListener extends ListenerAdapter {
 							default:
 								player1 = 2;
 						}
+						System.out.println("Player1: " + player1);
 		
 						int winner = getWinner(player1, botMove);
+						String botWeapon = "";
+						switch (botMove) {
+						case 0:
+							botWeapon = "scissors";
+							break;
+						case 1: 
+							botWeapon = "paper";
+							break;
+						default: 
+							botWeapon = "rock";
+						}
+						channel.sendMessage(event.getMember().getUser().getName() + ": " + receivedMessage[0]).queue();
+						channel.sendMessage("Unicorn: " + botWeapon).queue();
 						switch (winner) {
 							case 1:
 								channel.sendMessage("You won! Congratulations " + event.getMember().getUser().getName() + "!").queue();
 								break;
 							case -1:
-								channel.sendMessage("I win! Good game!").queue();
+								channel.sendMessage("I win! Good game " + event.getMember().getUser().getName() + "!").queue();
 								break;
 							default:
 								channel.sendMessage("It's a tie!").queue();
@@ -173,7 +186,7 @@ public class FirstEventListener extends ListenerAdapter {
 		if ( (p1 + 1) %3 == p2) {
 			return 1;
 		}
-		return 0;
+		return -1;
 		
 	}
 }
