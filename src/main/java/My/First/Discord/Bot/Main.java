@@ -4,6 +4,9 @@ import java.io.IOException;
 
 import javax.security.auth.login.LoginException;
 
+import com.jagrosh.jdautilities.command.CommandClientBuilder;
+import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
+
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -14,14 +17,35 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 public class Main extends ListenerAdapter {
 	public static void main(String[] args) {
 		try {
-			JDA api = new JDABuilder(AccountType.BOT)
-					.setToken(args[0])
-					.build();
-			System.out.println("Alive!");
+			CommandClientBuilder client = new CommandClientBuilder();
 			
+			EventWaiter waiter = new EventWaiter();
+			
+			// commands work only if someone writes: --
+			String ownerId = args[1];
+			client.setPrefix("--");
+			
+			// set the owner of the Bot :D
+			client.setOwnerId(ownerId);
+			
+			// sets emojis used throughout the bot on successes, warnings, and failures
+	        client.setEmojis("\uD83D\uDE03", "\uD83D\uDE2E", "\uD83D\uDE26");
+	        
+	        client.addCommand(new HelloCommand(waiter));
+	        
+	        JDA builder = new JDABuilder(AccountType.BOT)
+					.setToken(args[0])
+					
+					// add listeners
+					.addEventListeners(new FirstEventListener(), waiter, client.build())
+					
+					// start the builder bot!
+					.build();			
 			// connect my bot to FirstEventLister class
-			api.addEventListener(new FirstEventListener());
-			System.out.println("RIght after adding event listener");
+	        
+			//builder.addEventListeners(new FirstEventListener(), waiter, client.build());
+			
+			
 		} catch (LoginException e) {
 			System.err.println("Login Error!");
 		} catch (IOException e) {

@@ -91,7 +91,7 @@ public class FirstEventListener extends ListenerAdapter {
 			channel.sendMessage(message).queue();
 		} 
 		else if (receivedMessage[0].equals("--getInfo")) {
-			Member objMember = event.getMember();	
+//			Member objMember = event.getMember();	
 		} else if (receivedMessage[0].contentEquals("--rps")) {
 			if (this.rpsPlayer == 0 && this.rpsOccupied == false) {
 				this.rpsPlayer = event.getMember().getIdLong();
@@ -131,7 +131,7 @@ public class FirstEventListener extends ListenerAdapter {
 							default:
 								player1 = 2;
 						}
-						System.out.println("Player1: " + player1);
+//						System.out.println("Player1: " + player1);
 		
 						int winner = getWinner(player1, botMove);
 						String botWeapon = "";
