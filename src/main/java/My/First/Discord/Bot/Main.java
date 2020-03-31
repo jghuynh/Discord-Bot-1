@@ -31,13 +31,18 @@ public class Main extends ListenerAdapter {
 			// sets emojis used throughout the bot on successes, warnings, and failures
 	        client.setEmojis("\uD83D\uDE03", "\uD83D\uDE2E", "\uD83D\uDE26");
 	        
-	        client.addCommand(new HelloCommand(waiter));
+	        client.addCommands(new HelloCommand(waiter), 
+	        				new RockPaperScissor(waiter));
 	        
-	        JDA builder = new JDABuilder(AccountType.BOT)
+	        // declaring a new class that will do this
+	        new JDABuilder(AccountType.BOT)
 					.setToken(args[0])
 					
 					// add listeners
-					.addEventListeners(new FirstEventListener(), waiter, client.build())
+					.addEventListeners(waiter, client.build())
+					
+					// former liseners
+					//new FirstEventListener(),
 					
 					// start the builder bot!
 					.build();			
@@ -48,9 +53,7 @@ public class Main extends ListenerAdapter {
 			
 		} catch (LoginException e) {
 			System.err.println("Login Error!");
-		} catch (IOException e) {
-			System.err.println("Oops! Failed to find file");
-		}
+		} 
 	}
 	
 	/**
