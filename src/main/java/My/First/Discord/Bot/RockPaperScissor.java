@@ -1,6 +1,7 @@
 package My.First.Discord.Bot;
 
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
@@ -59,13 +60,15 @@ public class RockPaperScissor extends Command {
                 
                 //String playerMove = e.getMessage().getContentRaw().toLowerCase();
                 // action
-                getFoeMove foeMove = (e.getMessage().getContentRaw().toLowerCase());
-                (foeMove, e) ->	 foeMove = e.getMessage().getContentRaw().toLowerCase(),
-                1, TimeUnit.MINUTES, () -> event.reply("Sorry, you took too long to reply! Good-bye!")
-//                e -> event.reply("You picked `" + e.getMessage().getContentRaw().toLowerCase() + "`!"),
+//                getFoeMove foeMove = (e.getMessage().getContentRaw().toLowerCase());
+//                (foeMove, e) ->	 foeMove = e.getMessage().getContentRaw().toLowerCase(),
 //                1, TimeUnit.MINUTES, () -> event.reply("Sorry, you took too long to reply! Good-bye!")
+                (e) -> event.reply("You: `" + e.getMessage().getContentRaw().toLowerCase() 
+                		+ "`\n`" +e.getJDA().getSelfUser().getName() + "`"),
+                1, TimeUnit.MINUTES, () -> event.reply("Sorry, you took too long to reply! Good-bye!")
                 
          );
+	}
 		
 //		waiter.waitForEvent(MessageReceivedEvent.class, 
 //				
@@ -84,7 +87,7 @@ public class RockPaperScissor extends Command {
 //		 if (lock.tryLock(50L, TimeUnit.MILLISECONDS)) ...
 //			event.reply("Sorry, you took too long to reply! Good-bye!");
 		
-	}
+	
 	
 	/**
 	 * Gets the winner of the rock paper scissors round
