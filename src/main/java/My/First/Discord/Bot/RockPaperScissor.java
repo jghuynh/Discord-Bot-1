@@ -1,5 +1,7 @@
 package My.First.Discord.Bot;
 
+import java.awt.List;
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
@@ -16,11 +18,15 @@ interface getFoeMove {
 public class RockPaperScissor extends Command {
 
 	private final EventWaiter waiter;
-	private String[] arsenal;
+	private ArrayList<String> arsenal;
+	private int winner;
 	
 	public RockPaperScissor(EventWaiter waiter) {
+		this.winner = 0;
 		this.waiter = waiter;
-		this.arsenal = new String[] {"rock", "paper", "scissors"};
+		this.arsenal.add("rock");
+		this.arsenal.add("paper");
+		this.arsenal.add("scissors");
 		
 		// Name to spawn the RockPaperScissor command
 		super.name = "rps";
@@ -56,18 +62,37 @@ public class RockPaperScissor extends Command {
 				// e = the next event.
 				e -> e.getAuthor().equals(event.getAuthor()) 
                 	&& e.getChannel().equals(event.getChannel()) 
-                	&& !e.getMessage().equals(event.getMessage()), 
+                	&& !e.getMessage().equals(event.getMessage()),
                 
                 //String playerMove = e.getMessage().getContentRaw().toLowerCase();
                 // action
 //                getFoeMove foeMove = (e.getMessage().getContentRaw().toLowerCase());
-//                (foeMove, e) ->	 foeMove = e.getMessage().getContentRaw().toLowerCase(),
+                //(foeMove, e) ->	 foeMove = e.getMessage().getContentRaw().toLowerCase(),
 //                1, TimeUnit.MINUTES, () -> event.reply("Sorry, you took too long to reply! Good-bye!")
-                (e) -> event.reply("You: `" + e.getMessage().getContentRaw().toLowerCase() 
-                		+ "`\n`" +e.getJDA().getSelfUser().getName() + "`"),
-                1, TimeUnit.MINUTES, () -> event.reply("Sorry, you took too long to reply! Good-bye!")
+                (e) -> {
+                	foeMove = e.getMessage().getContentRaw().toLowerCase();
+                	event.reply("You: `" + e.getMessage().getContentRaw().toLowerCase() 
+                		+ "`\n`" +e.getJDA().getSelfUser().getName() + "`: `" 
+                		+ botMove + "`");
+                	// calculate winner
+                	this.winner = getWinner(botMoveID, this.arsenal.indexOf(foeMove));
+                	
+                	if (this.winner == 1) {
+                		event.reply("Good job `" + rpsPlayer + "`! You won!");
+                	} else if(this.winner == -1) {
+                		event.reply("I win! Great game `" + rpsPlayer + "`!");
+                	} else {
+                		event.reply("It's a tie! Good job `" + rpsPlayer + "`!");
+                	}
+                	
+                	if(TimeUnit.MINUTES.sleep(1))
+                	{
+                		event.reply("Sorry, you took too long to reply! Good-bye!");
+                	} // https://stackoverflow.com/questions/23283041/how-to-make-java-delay-for-a-few-seconds/48403623
+                }
+				); // end of waitForEvent() method
                 
-         );
+		
 	}
 		
 //		waiter.waitForEvent(MessageReceivedEvent.class, 
