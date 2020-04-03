@@ -4,6 +4,7 @@ import java.awt.List;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.concurrent.*;
 
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
@@ -25,6 +26,7 @@ public class RockPaperScissor extends Command {
 	public RockPaperScissor(EventWaiter waiter) {
 		this.winner = 0;
 		this.waiter = waiter;
+		this.arsenal = new ArrayList<>();
 		this.arsenal.add("rock");
 		this.arsenal.add("paper");
 		this.arsenal.add("scissors");
@@ -38,11 +40,6 @@ public class RockPaperScissor extends Command {
 		super.help = "Plays Rock-Paper-Scissors with you!";
 		super.cooldown = 10;
 		
-	}
-	
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -73,29 +70,50 @@ public class RockPaperScissor extends Command {
 //                1, TimeUnit.MINUTES, () -> event.reply("Sorry, you took too long to reply! Good-bye!")
                 (e) -> {
                 	
+                	CountDownLatch userRepliedLatch = new CountDownLatch(1);
+                	boolean userReplied = false;
+                	try {
+						userReplied = userRepliedLatch.await(10,TimeUnit.SECONDS);
+						System.out.println("Inside try loop. userReplied = " + userReplied);
+					} catch (InterruptedException e1) {
+						System.err.println("Oops! Interrupted Exception!");
+					}
+                	
                 	this.foeMove = e.getMessage().getContentRaw().toLowerCase();
+                	System.out.println("foeMove: " + foeMove);
                 	if (this.foeMove.equals("rock") || this.foeMove.equals("paper") || this.foeMove.equals("scissors")) {
+                		userReplied = true;
                 		event.reply("You: `" + e.getMessage().getContentRaw().toLowerCase() 
                         		+ "`\n`" +e.getJDA().getSelfUser().getName() + "`: `" + botMove + "`");
-                        	// calculate winner
-                        	this.winner = getWinner(botMoveID, this.arsenal.indexOf(foeMove));
+                        	
+                		// calculate winner
+                		System.out.println("BotMoveID: " + botMoveID);
+                		System.out.println("BotMove: " + this.arsenal.get(botMoveID));
+                		System.out.println("foeMove:" + foeMove);
+                		System.out.println("foeMoveID: " + this.arsenal.indexOf(foeMove));
+                       this.winner = getWinner(botMoveID, this.arsenal.indexOf(foeMove));
                         	
                         	if (this.winner == 1) {
                         		event.reply("Good job `" + rpsPlayer + "`! You won!");
+                        		System.out.println("User won");
                         	} else if(this.winner == -1) {
                         		event.reply("I win! Great game `" + rpsPlayer + "`!");
+                        		System.out.println("Unicorn won");
                         	} else {
                         		event.reply("It's a tie! Good job `" + rpsPlayer + "`!");
+                        		System.out.println("Tie");
                         	}
+                        	
                         	
 //                        	if(TimeUnit.MINUTES.sleep(1))
 //                        	{
 //                        		event.reply("Sorry, you took too long to reply! Good-bye!");
 //                        	} // https://stackoverflow.com/questions/23283041/how-to-make-java-delay-for-a-few-seconds/48403623
                 	} // if statement
-                	/*
-                	 * Test for whether foeMove is rock or paper or scissors
-                	 */
+                	
+                	if (!userReplied) {
+                		event.reply("Sorry, you took too long to reply! Good-bye!");
+                	}
                 	
                 }
 			); // end of waitForEvent() method
