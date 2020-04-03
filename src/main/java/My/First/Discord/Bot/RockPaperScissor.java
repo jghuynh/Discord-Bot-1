@@ -3,7 +3,7 @@ package My.First.Discord.Bot;
 import java.awt.List;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
+//import java.util.function.Consumer;
 import java.util.concurrent.*;
 
 import com.jagrosh.jdautilities.command.Command;
@@ -22,6 +22,8 @@ public class RockPaperScissor extends Command {
 	private ArrayList<String> arsenal;
 	private int winner;
 	private String foeMove;
+//	private Timer timer;
+//	private TimerTask task;
 	
 	public RockPaperScissor(EventWaiter waiter) {
 		this.winner = 0;
@@ -52,8 +54,6 @@ public class RockPaperScissor extends Command {
 		// Unicorn bot makes a move
 		int botMoveID = (int) (Math.random() * (this.arsenal.size() - 1) + 0);
 		String botMove = this.arsenal.get(botMoveID);
-		//String foeMove = "";
-		// player picks a weapon
 		waiter.waitForEvent(MessageReceivedEvent.class, 
 				
 				// condition: make sure the responder is the same human who 
@@ -70,48 +70,76 @@ public class RockPaperScissor extends Command {
 //                1, TimeUnit.MINUTES, () -> event.reply("Sorry, you took too long to reply! Good-bye!")
                 (e) -> {
                 	
-                	CountDownLatch userRepliedLatch = new CountDownLatch(1);
+//                	CountDownLatch userRepliedLatch = new CountDownLatch(1);
                 	boolean userReplied = false;
-                	try {
-						userReplied = userRepliedLatch.await(10,TimeUnit.SECONDS);
-						System.out.println("Inside try loop. userReplied = " + userReplied);
-					} catch (InterruptedException e1) {
-						System.err.println("Oops! Interrupted Exception!");
-					}
+                	long secToWait = TimeUnit.SECONDS.toSeconds(4);
                 	
-                	this.foeMove = e.getMessage().getContentRaw().toLowerCase();
-                	System.out.println("foeMove: " + foeMove);
-                	if (this.foeMove.equals("rock") || this.foeMove.equals("paper") || this.foeMove.equals("scissors")) {
-                		userReplied = true;
-                		event.reply("You: `" + e.getMessage().getContentRaw().toLowerCase() 
-                        		+ "`\n`" +e.getJDA().getSelfUser().getName() + "`: `" + botMove + "`");
-                        	
-                		// calculate winner
-                		System.out.println("BotMoveID: " + botMoveID);
-                		System.out.println("BotMove: " + this.arsenal.get(botMoveID));
-                		System.out.println("foeMove:" + foeMove);
-                		System.out.println("foeMoveID: " + this.arsenal.indexOf(foeMove));
-                       this.winner = getWinner(botMoveID, this.arsenal.indexOf(foeMove));
-                        	
-                        	if (this.winner == 1) {
-                        		event.reply("Good job `" + rpsPlayer + "`! You won!");
-                        		System.out.println("User won");
-                        	} else if(this.winner == -1) {
-                        		event.reply("I win! Great game `" + rpsPlayer + "`!");
-                        		System.out.println("Unicorn won");
-                        	} else {
-                        		event.reply("It's a tie! Good job `" + rpsPlayer + "`!");
-                        		System.out.println("Tie");
-                        	}
-                        	
+                	// the time to stop waiting
+                	long endWaitTime = System.currentTimeMillis() + secToWait*1000;
+                	System.out.println("End Wait Time: " + endWaitTime);
+                	System.out.println("Current time: " + System.currentTimeMillis());
+                	
+                	// while we are still waiting
+                	while (System.currentTimeMillis() < endWaitTime && !userReplied) {
+                		
+                	
+//                	try {
+//						userReplied = userRepliedLatch.await(10,TimeUnit.SECONDS);
+////						userRepliedLatch.wait(1000);
+//						System.out.println("Inside try loop. userReplied = " + userReplied);
+//					} catch (InterruptedException e1) {
+//						System.err.println("Oops! Interrupted Exception!");
+//					} catch (IllegalMonitorStateException e1) {
+//						System.err.println("Uh oh, illegal monitor state exception, what?");
+//					}
+                		
+                			System.out.println("Time: " + System.currentTimeMillis());
+                        	this.foeMove = e.getMessage().getContentRaw().toLowerCase();
+                        	if (e.getMessage().getContentRaw().toLowerCase().equals("rock") || e.getMessage().getContentRaw().toLowerCase().equals("paper") || e.getMessage().getContentRaw().toLowerCase().equals("scissors")) {
+                        		userReplied = true;	
+                        		event.reply("You: `" + e.getMessage().getContentRaw().toLowerCase() 
+                                		+ "`\n`" +e.getJDA().getSelfUser().getName() + "`: `" + botMove + "`");
+                        		// calculate winner
+                                this.winner = getWinner(this.arsenal.indexOf(foeMove), botMoveID);
+                                 	
+                                 	if (this.winner == 1) {
+                                 		event.reply("Good job `" + rpsPlayer + "`! You won!");
+                                 		System.out.println("User won");
+                                 	} else if(this.winner == -1) {
+                                 		event.reply("I win! Great game `" + rpsPlayer + "`!");
+                                 		System.out.println("Unicorn won");
+                                 	} else {
+                                 		event.reply("It's a tie! Good job `" + rpsPlayer + "`!");
+                                 		System.out.println("Tie");
+                                 	}
+                                 	break;
+                        		}
+                        
+                		
+                		else {
+                    		try {
+    							Thread.sleep(1000);
+    							System.out.println("Thread is sleeping!");
+    						} catch (InterruptedException e1) {
+    							System.err.println("Oops! Interrupted while waiting for user to reply!");
+    						}
+                    	}
+                	
+//                		userRepliedLatch.countDown();
+//                		System.out.println("Count: " + userRepliedLatch.getCount());
+//                		try {
+//                			userRepliedLatch.notifyAll();
+//                		} catch (IllegalMonitorStateException e1) {
+//                			System.err.println("Caught illegal monitor state exception!");
+//                		}                        	
                         	
 //                        	if(TimeUnit.MINUTES.sleep(1))
 //                        	{
 //                        		event.reply("Sorry, you took too long to reply! Good-bye!");
 //                        	} // https://stackoverflow.com/questions/23283041/how-to-make-java-delay-for-a-few-seconds/48403623
-                	} // if statement
+                 // while loop
                 	
-                	if (!userReplied) {
+                	if (userReplied == false) {
                 		event.reply("Sorry, you took too long to reply! Good-bye!");
                 	}
                 	
@@ -134,9 +162,6 @@ public class RockPaperScissor extends Command {
 //            	1, TimeUnit.MINUTES, () -> event.reply("Sorry, you took too long to reply! Good-bye!")
 //        );
 //		
-//		Lock lock = ...;
-//		 if (lock.tryLock(50L, TimeUnit.MILLISECONDS)) ...
-//			event.reply("Sorry, you took too long to reply! Good-bye!");
 		
 	
 	
