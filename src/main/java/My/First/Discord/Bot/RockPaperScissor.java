@@ -82,17 +82,6 @@ public class RockPaperScissor extends Command {
                 	// while we are still waiting
                 	while (System.currentTimeMillis() < endWaitTime && !userReplied) {
                 		
-                	
-//                	try {
-//						userReplied = userRepliedLatch.await(10,TimeUnit.SECONDS);
-////						userRepliedLatch.wait(1000);
-//						System.out.println("Inside try loop. userReplied = " + userReplied);
-//					} catch (InterruptedException e1) {
-//						System.err.println("Oops! Interrupted Exception!");
-//					} catch (IllegalMonitorStateException e1) {
-//						System.err.println("Uh oh, illegal monitor state exception, what?");
-//					}
-                		
                 			System.out.println("Time: " + System.currentTimeMillis());
                         	this.foeMove = e.getMessage().getContentRaw().toLowerCase();
                         	if (e.getMessage().getContentRaw().toLowerCase().equals("rock") || e.getMessage().getContentRaw().toLowerCase().equals("paper") || e.getMessage().getContentRaw().toLowerCase().equals("scissors")) {
@@ -113,11 +102,7 @@ public class RockPaperScissor extends Command {
                                  		System.out.println("Tie");
                                  	}
                                  	break;
-                                 	}
-                        		
-                        
-                		
-                		else {
+                            } else {
                     		try {
     							Thread.sleep(1000);
     							System.out.println("Thread is sleeping!");
@@ -127,29 +112,11 @@ public class RockPaperScissor extends Command {
                     	}
                 	}
                 	
-//                		userRepliedLatch.countDown();
-//                		System.out.println("Count: " + userRepliedLatch.getCount());
-//                		try {
-//                			userRepliedLatch.notifyAll();
-//                		} catch (IllegalMonitorStateException e1) {
-//                			System.err.println("Caught illegal monitor state exception!");
-//                		}                        	
-                        	
-//                        	if(TimeUnit.MINUTES.sleep(1))
-//                        	{
-//                        		event.reply("Sorry, you took too long to reply! Good-bye!");
-//                        	} // https://stackoverflow.com/questions/23283041/how-to-make-java-delay-for-a-few-seconds/48403623
-                 // while loop
-                	
                 	if (userReplied == false) {
                 		event.reply("Sorry, you took too long to reply! Good-bye!");
                 	}
-                	}
-                	
-                
+                }
 			); // end of waitForEvent() method
-                
-		
 	}
 		
 //		waiter.waitForEvent(MessageReceivedEvent.class, 
