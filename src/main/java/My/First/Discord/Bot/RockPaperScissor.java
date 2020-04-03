@@ -20,6 +20,7 @@ public class RockPaperScissor extends Command {
 	private final EventWaiter waiter;
 	private ArrayList<String> arsenal;
 	private int winner;
+	private String foeMove;
 	
 	public RockPaperScissor(EventWaiter waiter) {
 		this.winner = 0;
@@ -27,6 +28,7 @@ public class RockPaperScissor extends Command {
 		this.arsenal.add("rock");
 		this.arsenal.add("paper");
 		this.arsenal.add("scissors");
+		this.foeMove = "";
 		
 		// Name to spawn the RockPaperScissor command
 		super.name = "rps";
@@ -51,9 +53,9 @@ public class RockPaperScissor extends Command {
 		event.reply("Let's play Rock-Paper-Scissors `" +  rpsPlayer + "`! Pick a move: rock, paper, or scissors.");
 		
 		// Unicorn bot makes a move
-		int botMoveID = (int) (Math.random() * (this.arsenal.length - 1) + 0);
-		String botMove = this.arsenal[botMoveID];
-		String foeMove = "";
+		int botMoveID = (int) (Math.random() * (this.arsenal.size() - 1) + 0);
+		String botMove = this.arsenal.get(botMoveID);
+		//String foeMove = "";
 		// player picks a weapon
 		waiter.waitForEvent(MessageReceivedEvent.class, 
 				
@@ -70,27 +72,33 @@ public class RockPaperScissor extends Command {
                 //(foeMove, e) ->	 foeMove = e.getMessage().getContentRaw().toLowerCase(),
 //                1, TimeUnit.MINUTES, () -> event.reply("Sorry, you took too long to reply! Good-bye!")
                 (e) -> {
-                	foeMove = e.getMessage().getContentRaw().toLowerCase();
-                	event.reply("You: `" + e.getMessage().getContentRaw().toLowerCase() 
-                		+ "`\n`" +e.getJDA().getSelfUser().getName() + "`: `" 
-                		+ botMove + "`");
-                	// calculate winner
-                	this.winner = getWinner(botMoveID, this.arsenal.indexOf(foeMove));
                 	
-                	if (this.winner == 1) {
-                		event.reply("Good job `" + rpsPlayer + "`! You won!");
-                	} else if(this.winner == -1) {
-                		event.reply("I win! Great game `" + rpsPlayer + "`!");
-                	} else {
-                		event.reply("It's a tie! Good job `" + rpsPlayer + "`!");
-                	}
+                	this.foeMove = e.getMessage().getContentRaw().toLowerCase();
+                	if (this.foeMove.equals("rock") || this.foeMove.equals("paper") || this.foeMove.equals("scissors")) {
+                		event.reply("You: `" + e.getMessage().getContentRaw().toLowerCase() 
+                        		+ "`\n`" +e.getJDA().getSelfUser().getName() + "`: `" + botMove + "`");
+                        	// calculate winner
+                        	this.winner = getWinner(botMoveID, this.arsenal.indexOf(foeMove));
+                        	
+                        	if (this.winner == 1) {
+                        		event.reply("Good job `" + rpsPlayer + "`! You won!");
+                        	} else if(this.winner == -1) {
+                        		event.reply("I win! Great game `" + rpsPlayer + "`!");
+                        	} else {
+                        		event.reply("It's a tie! Good job `" + rpsPlayer + "`!");
+                        	}
+                        	
+//                        	if(TimeUnit.MINUTES.sleep(1))
+//                        	{
+//                        		event.reply("Sorry, you took too long to reply! Good-bye!");
+//                        	} // https://stackoverflow.com/questions/23283041/how-to-make-java-delay-for-a-few-seconds/48403623
+                	} // if statement
+                	/*
+                	 * Test for whether foeMove is rock or paper or scissors
+                	 */
                 	
-                	if(TimeUnit.MINUTES.sleep(1))
-                	{
-                		event.reply("Sorry, you took too long to reply! Good-bye!");
-                	} // https://stackoverflow.com/questions/23283041/how-to-make-java-delay-for-a-few-seconds/48403623
                 }
-				); // end of waitForEvent() method
+			); // end of waitForEvent() method
                 
 		
 	}
