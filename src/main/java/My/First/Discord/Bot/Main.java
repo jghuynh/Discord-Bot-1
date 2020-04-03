@@ -24,6 +24,7 @@ public class Main extends ListenerAdapter {
 			// commands work only if someone writes: --
 			String ownerId = args[1];
 			client.setPrefix("--");
+			// hello
 			
 			// set the owner of the Bot :D
 			client.setOwnerId(ownerId);
