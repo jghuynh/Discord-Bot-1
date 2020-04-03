@@ -113,7 +113,8 @@ public class RockPaperScissor extends Command {
                                  		System.out.println("Tie");
                                  	}
                                  	break;
-                        		}
+                                 	}
+                        		
                         
                 		
                 		else {
@@ -124,6 +125,7 @@ public class RockPaperScissor extends Command {
     							System.err.println("Oops! Interrupted while waiting for user to reply!");
     						}
                     	}
+                	}
                 	
 //                		userRepliedLatch.countDown();
 //                		System.out.println("Count: " + userRepliedLatch.getCount());
@@ -142,8 +144,9 @@ public class RockPaperScissor extends Command {
                 	if (userReplied == false) {
                 		event.reply("Sorry, you took too long to reply! Good-bye!");
                 	}
+                	}
                 	
-                }
+                
 			); // end of waitForEvent() method
                 
 		
