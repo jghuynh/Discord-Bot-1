@@ -16,12 +16,15 @@ interface getFoeMove {
 	public String getWeapon(String weapon);
 }
 
-public class RockPaperScissor extends Command {
+public class RockPaperScissor extends Command implements Runnable {
 
 	private final EventWaiter waiter;
 	private ArrayList<String> arsenal;
 	private int winner;
 	private String foeMove;
+	private boolean userReplied;
+	private long endWaitTime;
+	private boolean timeOut;
 //	private Timer timer;
 //	private TimerTask task;
 	
@@ -33,6 +36,8 @@ public class RockPaperScissor extends Command {
 		this.arsenal.add("paper");
 		this.arsenal.add("scissors");
 		this.foeMove = "";
+		this.userReplied = false;
+		this.timeOut = false;
 		
 		// Name to spawn the RockPaperScissor command
 		super.name = "rps";
@@ -42,6 +47,10 @@ public class RockPaperScissor extends Command {
 		super.help = "Plays Rock-Paper-Scissors with you!";
 		super.cooldown = 10;
 		
+	}
+	
+	public RockPaperScissor() {
+		this(new EventWaiter());
 	}
 
 	@Override
@@ -54,14 +63,29 @@ public class RockPaperScissor extends Command {
 		// Unicorn bot makes a move
 		int botMoveID = (int) (Math.random() * (this.arsenal.size() - 1) + 0);
 		String botMove = this.arsenal.get(botMoveID);
+		Thread myTimer = new Thread(new RockPaperScissor());
+		Thread anotherTimer = new Thread(new RockPaperScissor());
+		//RockPaperScissor myThread = new RockPaperScissor();
+		// my main person starting their job
+		myTimer.start();
+		anotherTimer.start();
+//		try {
+//			myTimer.wait();
+//		} catch (InterruptedException e2) {
+//			System.err.println("Oops! Interruption error!");
+//		}
+		
+		// another friend doing this rps
+		System.out.println("Starting countdown?");
+		while (System.currentTimeMillis() < this.endWaitTime && !userReplied) {
 		waiter.waitForEvent(MessageReceivedEvent.class, 
 				
 				// condition: make sure the responder is the same human who 
 				// talked to Unicorn bot. In same channel, and message is not same
 				// e = the next event.
 				e -> e.getAuthor().equals(event.getAuthor()) 
-                	&& e.getChannel().equals(event.getChannel()) 
-                	&& !e.getMessage().equals(event.getMessage()),
+					&& e.getChannel().equals(event.getChannel()) 
+					&& !e.getMessage().equals(event.getMessage()),
                 
                 //String playerMove = e.getMessage().getContentRaw().toLowerCase();
                 // action
@@ -71,19 +95,13 @@ public class RockPaperScissor extends Command {
                 (e) -> {
                 	
 //                	CountDownLatch userRepliedLatch = new CountDownLatch(1);
-                	boolean userReplied = false;
-                	long secToWait = TimeUnit.SECONDS.toSeconds(4);
-                	
-                	// the time to stop waiting
-                	long endWaitTime = System.currentTimeMillis() + secToWait*1000;
-                	System.out.println("End Wait Time: " + endWaitTime);
-                	System.out.println("Current time: " + System.currentTimeMillis());
-                	
+                	//boolean userReplied = false;
                 	// while we are still waiting
-                	while (System.currentTimeMillis() < endWaitTime && !userReplied) {
-                		
+                	//while (System.currentTimeMillis() < this.endWaitTime && !userReplied) {
+                	if (!this.timeOut) {
                 			System.out.println("Time: " + System.currentTimeMillis());
                         	this.foeMove = e.getMessage().getContentRaw().toLowerCase();
+                        	// if user correctly chose a weapon
                         	if (e.getMessage().getContentRaw().toLowerCase().equals("rock") || e.getMessage().getContentRaw().toLowerCase().equals("paper") || e.getMessage().getContentRaw().toLowerCase().equals("scissors")) {
                         		userReplied = true;	
                         		event.reply("You: `" + e.getMessage().getContentRaw().toLowerCase() 
@@ -91,6 +109,7 @@ public class RockPaperScissor extends Command {
                         		// calculate winner
                                 this.winner = getWinner(this.arsenal.indexOf(foeMove), botMoveID);
                                  	
+                                // choosing winner
                                  	if (this.winner == 1) {
                                  		event.reply("Good job `" + rpsPlayer + "`! You won!");
                                  		System.out.println("User won");
@@ -101,7 +120,7 @@ public class RockPaperScissor extends Command {
                                  		event.reply("It's a tie! Good job `" + rpsPlayer + "`!");
                                  		System.out.println("Tie");
                                  	}
-                                 	break;
+                                 	//break; //for the while loop
                             } else {
                     		try {
     							Thread.sleep(1000);
@@ -117,6 +136,7 @@ public class RockPaperScissor extends Command {
                 	}
                 }
 			); // end of waitForEvent() method
+		}
 	}
 		
 //		waiter.waitForEvent(MessageReceivedEvent.class, 
@@ -154,5 +174,33 @@ public class RockPaperScissor extends Command {
 		}
 		return 1;
 	}
+
+@Override
+public void run() {
+	try {
+		
+		// Displaying that thread is running
+		System.out.println("Thread " + Thread.currentThread().getId() + " is running");
+		long secToWait = TimeUnit.SECONDS.toSeconds(5);
+    	
+    	// the time to stop waiting
+    	this.endWaitTime = System.currentTimeMillis() + secToWait*1000;
+    	System.out.println("End Wait Time: " + endWaitTime);
+    	System.out.println("Current time:    " + System.currentTimeMillis());
+    	// if running out of time
+//    	while (System.currentTimeMillis() < this.endWaitTime) {
+//    		//System.out.println("Counting down!.");
+//    	}
+    	if (System.currentTimeMillis() >= this.endWaitTime) {
+    		this.timeOut = true;
+        	this.userReplied = false;
+    	}
+    	
+    	//this.notifyAll();
+	} catch (Exception e) {
+		System.err.println("Exception caught in thread!");
+	}
+	
+}
 
 }
