@@ -1,6 +1,7 @@
 package My.First.Discord.Bot;
 
 import java.awt.List;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 //import java.util.function.Consumer;
@@ -23,6 +24,7 @@ public class RockPaperScissor extends Command implements Runnable {
 	private int winner;
 	private String foeMove;
 	private boolean userReplied;
+	private long secToWait;
 	private long endWaitTime;
 	private boolean timeOut;
 //	private Timer timer;
@@ -38,6 +40,7 @@ public class RockPaperScissor extends Command implements Runnable {
 		this.foeMove = "";
 		this.userReplied = false;
 		this.timeOut = false;
+		this.secToWait = TimeUnit.SECONDS.toSeconds(5);
 		
 		// Name to spawn the RockPaperScissor command
 		super.name = "rps";
@@ -68,7 +71,7 @@ public class RockPaperScissor extends Command implements Runnable {
 		//RockPaperScissor myThread = new RockPaperScissor();
 		// my main person starting their job
 		myTimer.start();
-		anotherTimer.start();
+
 //		try {
 //			myTimer.wait();
 //		} catch (InterruptedException e2) {
@@ -76,8 +79,9 @@ public class RockPaperScissor extends Command implements Runnable {
 //		}
 		
 		// another friend doing this rps
-		System.out.println("Starting countdown?");
-		while (System.currentTimeMillis() < this.endWaitTime && !userReplied) {
+		System.out.println("Starting countdown? userReplied = " + this.userReplied);
+		while (System.currentTimeMillis() < this.endWaitTime && !this.userReplied) {
+			System.out.println("Inside while loop");
 		waiter.waitForEvent(MessageReceivedEvent.class, 
 				
 				// condition: make sure the responder is the same human who 
@@ -181,10 +185,10 @@ public void run() {
 		
 		// Displaying that thread is running
 		System.out.println("Thread " + Thread.currentThread().getId() + " is running");
-		long secToWait = TimeUnit.SECONDS.toSeconds(5);
+
     	
     	// the time to stop waiting
-    	this.endWaitTime = System.currentTimeMillis() + secToWait*1000;
+    	this.endWaitTime = System.currentTimeMillis() + this.secToWait*1000;
     	System.out.println("End Wait Time: " + endWaitTime);
     	System.out.println("Current time:    " + System.currentTimeMillis());
     	// if running out of time
@@ -192,6 +196,7 @@ public void run() {
 //    		//System.out.println("Counting down!.");
 //    	}
     	if (System.currentTimeMillis() >= this.endWaitTime) {
+    		System.out.println("So we ran out of time");
     		this.timeOut = true;
         	this.userReplied = false;
     	}
